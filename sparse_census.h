@@ -66,6 +66,12 @@ static void censusTransform(uint8_t* in, uint32_t* out, int w, int h)
     }
 }
 
+static float subpixel(float costLeft, float costMiddle, float costRight)
+{
+    auto num = costRight - costLeft;
+    auto den = (costRight < costLeft) ? (costMiddle - costLeft) : (costMiddle - costRight);
+    return den != 0 ? 0.5f * (num / den) : 0;
+}
 
 // left and right images of sized width neight
 // locs are n pairs of (y,x) values
