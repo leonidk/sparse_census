@@ -75,13 +75,14 @@ static void censusTransform(uint8_t* in, uint32_t* out, int w, int h)
 #define BOX_RADIUS (3)
 #define MAX_DISP (32) 
 
-std::vector<int32_t> match(uint8_t * left, uint8_t * right, int32_t width, int32_t height, int32_t * locs, int32_t n)
+std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t height, std::vector<float> & pts1)
 {
-    std::vector<int32_t> matches(2*n,-1);
+    std::vector<float>    pts2(pts1.size(),-1);
     std::vector<int32_t>  censusLeft(width * height, 0);
     std::vector<int32_t>  censusRight(width * height, 0);
 
-    for(int i=0; i < n; i++){
+    for(int i=0; i < pts1.size(); i++){
+        pts2[i] = pts1[i];
         // let's do this for 
     }
 
@@ -103,5 +104,5 @@ std::vector<int32_t> match(uint8_t * left, uint8_t * right, int32_t width, int32
             }
         }
     }
-    return matches;
+    return pts2;
 }

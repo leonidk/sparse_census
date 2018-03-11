@@ -11,7 +11,7 @@ TARGETS := test_sparse
 .PHONY: all
 all: test_sparse
 
-test_sparse: test.o
+test_sparse: test.o 
 	@mkdir -p ../bin
 	@echo "   [$@]"
 	@$(CXX) -o $@ $^ $(LDFLAGS) `pkg-config --libs opencv`
@@ -20,7 +20,7 @@ test_sparse: test.o
 	@echo "   $@"
 	@$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
 
-%.o: %.cpp
+%.o: %.cpp sparse_census.h
 	@echo "   $@"
 	@$(CXX) -o $@ -c $< $(CXXFLAGS) $(CPPFLAGS)
 
