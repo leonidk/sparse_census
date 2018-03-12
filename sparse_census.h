@@ -48,11 +48,11 @@ const int samples[NUM_SAMPLES*2] = {
     3, 2
 };
 
-static void censusTransform(uint8_t* in, uint32_t* out, int width, int height)
-                           // int w,int e, int n, int s)
+static void censusTransform(uint8_t* in, uint32_t* out, int width, int height,
+                         int u,int v,int w,int e, int n, int s)
 {
-    for (int y = C_R; y < height - C_R; y++) {
-        for (int x = C_R; x < width - C_R; x++) {
+    for (int y = std::max(v-n,C_R); y < std::min(v+s,height - C_R); y++) {
+        for (int x = std::max(u-w,C_R); x < std::min(u+e,width - C_R); x++) {
             uint32_t px = 0;
             auto center = in[y * width + x];
             for (int p = 0; p < NUM_SAMPLES; p++) {
@@ -84,9 +84,6 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
     std::vector<uint32_t>  censusRight(width * height, 0);
 
     // fill out census windows
-    censusTransform(left,censusLeft.data(),width,height);
-    censusTransform(right,censusRight.data(),width,height);
-
     for(int i=0; i < pts1.size(); i+=2){
         auto x = pts2[i] = pts1[i];
         auto y = pts2[i+1] = pts1[i+1];
@@ -98,7 +95,10 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
                 pts2[i+1] = -1;
                 continue;
         }
+        censusTransform(left,censusLeft.data(),width,height,x,y,0,1,0,1);
+        censusTransform(right,censusRight.data(),width,height,x,y,MAX_DISP,1,0,1);
     }
+/*
     for (int y = BOX_RADIUS; y < height - BOX_RADIUS; y++) {
         for (int x = BOX_RADIUS; x < width - BOX_RADIUS - DS; x++) {
             auto lb = std::max(BOX_RADIUS, x - MAX_DISP);
@@ -117,6 +117,7 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
             }
         }
     }
+*/
 
     return pts2;
 }

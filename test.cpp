@@ -39,7 +39,7 @@ int main(int argc,char* argv[])
     auto begin = std::chrono::high_resolution_clock::now();
     auto pts2 = match(l.data,r.data,l.cols,l.rows,pts1);
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << " ms" << std::endl;
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end-begin).count() << " us" << std::endl;
     /// go back to opencv friendly
     for(auto i=0; i < pts2.size(); i+=2){
         // 4 is random
