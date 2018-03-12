@@ -3,7 +3,7 @@ CXX ?= g++
 
 CPPFLAGS = -I../src `pkg-config --cflags hiredis`
 CFLAGS = -g -std=gnu99 -Wall -Wno-unused-parameter -Wno-unused-function -O2
-CXXFLAGS = -g -Wall -O2 -std=c++14 -march=native
+CXXFLAGS = -g -Wall -std=c++14 -O2 -march=native
 LDFLAGS = -lpthread -lm `pkg-config --libs hiredis`
 
 TARGETS := test_sparse

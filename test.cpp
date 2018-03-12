@@ -20,14 +20,14 @@ int main(int argc,char* argv[])
 
     // blow out the right image
     for(int i=0; i < l.cols*l.rows;i++) {
-        r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*3/2);
+        //r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*3/2);
     }
 
     // get image features
     std::vector<cv::KeyPoint> locs1, locs2;
     std::vector<float> pts1;
     std::vector<cv::DMatch> matches;
-    FAST(l,locs1,80,true);
+    FAST(l,locs1,100,true);
 
     // get float arrays
     for(const auto & l : locs1){
@@ -45,12 +45,12 @@ int main(int argc,char* argv[])
         // 4 is random
         locs2.push_back(cv::KeyPoint(pts2[i],pts2[i+1],4));
     }
-
     for(int i=0; i < locs1.size();i++){
-        if(pts2[i]>= 0)
+        if(pts2[2*i] >= 0)
             matches.push_back({i,i,0});
     }
     drawMatches(l,locs1,r,locs2,matches,outimg);
+    printf("%d %d\n",locs1.size(),matches.size());
 
     cv::imshow("window",outimg);
     cv::waitKey(0);
