@@ -20,14 +20,14 @@ int main(int argc,char* argv[])
 
     // blow out the right image
     for(int i=0; i < l.cols*l.rows;i++) {
-        r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*3/2);
+        r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*1.5);
     }
 
     // get image features
     std::vector<cv::KeyPoint> locs1, locs2;
     std::vector<float> pts1;
     std::vector<cv::DMatch> matches;
-    FAST(l,locs1,60,true);
+    FAST(l,locs1,100,true);
 
     // get float arrays
     for(const auto & l : locs1){

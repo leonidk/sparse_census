@@ -26,6 +26,21 @@
 #ifndef MAX_DISP
 #define MAX_DISP (128)
 #endif
+// maximum number of bits wrong per pixel
+// scaled to box size
+#ifndef MAX_COST
+#define MAX_COST (9*(2*BOX_RADIUS+1)*(2*BOX_RADIUS+1))
+#endif
+// minimum number of bits wrong
+#ifndef MIN_COST
+#define MIN_COST (10)
+#endif
+// the second best has to be AT LEAST this much 
+// set to zero to disable
+#ifndef SECOND_PEAK
+#define SECOND_PEAK (50)
+#endif
+
 // y,x
 const int samples[NUM_SAMPLES*2] = {
     -3, -2,
@@ -149,7 +164,45 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
         auto spL =  subpixel(nL, nC, nR);
         pts2[i+1] = pts1[i+1];
         pts2[i]   = pts1[i] - minLIdx-DS+spL;
-        if(minLIdx==0){
+
+        auto valid = true;
+        #if SECOND_PEAK != 0
+            auto minL2Val = std::numeric_limits<uint16_t>::max();
+            for (int d = 0; d < MAX_DISP; d++) {
+                auto cost = costs[d];
+                auto costNext = (d == MAX_DISP - 1) ? cost : costs[d+1];
+                auto costPrev = (d == 0) ? cost : costs[d - 1];
+
+                if (cost <= costNext && cost <= costPrev) {
+                    if (d == minLIdx)
+                        continue;
+                    if (cost < minL2Val)
+                        minL2Val = cost;
+                }
+            }
+            auto diffSP = minL2Val - minLVal;
+            if(diffSP <= SECOND_PEAK) {
+                valid = false;
+            }
+        #endif
+        if(nC < MIN_COST) {
+            valid = false;
+        }
+        if(nC > MAX_COST) {
+            valid = false;
+        }
+        // it's clear to me that..
+        // this is probably useless
+        // for sparse matches based on corner features 
+        //auto diffL = (int)nL - (int)nC;
+        //auto diffR = (int)nR - (int)nC;
+        //if(diffL >= NEIGHBOR_COST || diffR >= NEIGHBOR_COST) {
+        //    valid = false;
+        //}
+
+        // if data is not valid
+        // or if it matched to self
+        if(minLIdx==0 || !valid){
             pts2[i] = -1;
             pts2[i+1] = -1;
         }
