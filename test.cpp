@@ -48,10 +48,20 @@ int main(int argc,char* argv[])
         pts1.clear();
         const char* tmp = std::string("points.dat").c_str();
         pts1 = readBinaryFile(tmp);
+        if(false){
+            pts1.clear();
+            for(auto y=0; y < l.rows; y++) {
+                for(auto x=0; x < l.cols; x++) {
+                    pts1.push_back(x);
+                    pts1.push_back(y);
+                }
+            }
+        }
         locs1.clear();
         for(auto i=0; i < pts1.size(); i+=2){
             locs1.push_back(cv::KeyPoint(pts1[i],pts1[i+1],4));
         }
+
     }
     // perform basic matching
     auto begin = std::chrono::high_resolution_clock::now();
