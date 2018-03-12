@@ -1,5 +1,5 @@
-CC ?= clang
-CXX ?= clang++
+CC ?= gcc
+CXX ?= g++
 
 CPPFLAGS = -I../src `pkg-config --cflags hiredis`
 CFLAGS = -g -std=gnu99 -Wall -Wno-unused-parameter -Wno-unused-function -O2

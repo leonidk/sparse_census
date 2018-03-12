@@ -19,7 +19,6 @@ std::vector<float> readBinaryFile(const char * infile)
 
 int main(int argc,char* argv[])
 {
-
     // get data
     cv::Mat left = cv::imread("left.png");
     cv::Mat right =cv::imread("right.png");

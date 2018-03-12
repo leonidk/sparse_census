@@ -113,7 +113,6 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
         int x = std::round(pts1[i]);
         int y = std::round(pts1[i+1]);
 
-
         // skip borders
         if(x < (C_R+BOX_RADIUS) || x >= width-(C_R+BOX_RADIUS)
             || y < (C_R+BOX_RADIUS) || y >= width-(C_R+BOX_RADIUS)) {
