@@ -35,6 +35,7 @@ int main(int argc,char* argv[])
         pts1.push_back(l.pt.y);
     }
     
+    // perform basic matching
     auto pts2 = match(l.data,r.data,l.cols,l.rows,pts1);
 
 
