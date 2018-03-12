@@ -36,9 +36,10 @@ int main(int argc,char* argv[])
     }
     
     // perform basic matching
+    auto begin = std::chrono::high_resolution_clock::now();
     auto pts2 = match(l.data,r.data,l.cols,l.rows,pts1);
-
-
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << " ms" << std::endl;
     /// go back to opencv friendly
     for(auto i=0; i < pts2.size(); i+=2){
         // 4 is random
@@ -46,7 +47,8 @@ int main(int argc,char* argv[])
     }
 
     for(int i=0; i < locs1.size();i++){
-        matches.push_back({i,i,0});
+        if(pts2[i]>= 0)
+            matches.push_back({i,i,0});
     }
     drawMatches(l,locs1,r,locs2,matches,outimg);
 
