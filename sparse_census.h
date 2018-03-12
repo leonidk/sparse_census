@@ -115,24 +115,22 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
 
 
         // skip borders
-        if(x < C_R || x >= width-C_R
-            || y < C_R || y >= width-C_R) {
+        if(x < (C_R+BOX_RADIUS) || x >= width-(C_R+BOX_RADIUS)
+            || y < (C_R+BOX_RADIUS) || y >= width-(C_R+BOX_RADIUS)) {
                 continue;
-        }
+        } else {}
         pts1_int[i] = x;
         pts1_int[i+1] = y;
         censusTransform(left,censusLeft.data(),width,height,x,y,BOX_RADIUS,BOX_RADIUS,BOX_RADIUS,BOX_RADIUS);
         censusTransform(right,censusRight.data(),width,height,x,y,MAX_DISP+1+BOX_RADIUS,BOX_RADIUS,BOX_RADIUS,BOX_RADIUS);
     }
-
     // find matches
     std::vector<int> costs(MAX_DISP);
     for(int i=0; i < pts2.size(); i+=2){
-        if(pts1_int[i] < 0) {pts2[i] = -1; continue;}
+        if(pts1_int[i] < 0) {pts2[i] = -1;pts2[i+1] = -1; continue;}
         auto x = pts1_int[i];
         auto y = pts1_int[i+1];
         std::fill(costs.begin(), costs.end(),0xffff);
-
 
         auto lb = std::max(BOX_RADIUS, x - MAX_DISP);
         auto search_limit = x - lb;
@@ -183,6 +181,7 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
             auto diffSP = minL2Val - minLVal;
             if(diffSP <= SECOND_PEAK) {
                 valid = false;
+
             }
         #endif
         if(nC < MIN_COST) {
@@ -205,7 +204,7 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
         if(minLIdx==0 || !valid){
             pts2[i] = -1;
             pts2[i+1] = -1;
-        }
+        } else {  }
     }
 
     return pts2;

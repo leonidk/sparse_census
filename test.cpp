@@ -5,13 +5,24 @@
 #include <opencv2/highgui.hpp>
 
 using namespace cv;
+#include <iostream>
+#include <fstream>
+std::vector<float> readBinaryFile(const char * infile)
+{
+    FILE *fp = fopen (infile, "rb");
+    std::vector<float> ret;
+    float tmp;
+    while (fread (&tmp, 4, 1, fp) == 1)
+        ret.push_back(tmp);
+    return ret;
+ }
 
 int main(int argc,char* argv[])
 {
 
     // get data
-    cv::Mat left = cv::imread("im2.png");
-    cv::Mat right =cv::imread("im6.png");
+    cv::Mat left = cv::imread("left.png");
+    cv::Mat right =cv::imread("right.png");
     cv::Mat l,r,outimg;
 
     //grey
@@ -20,21 +31,29 @@ int main(int argc,char* argv[])
 
     // blow out the right image
     for(int i=0; i < l.cols*l.rows;i++) {
-        r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*1.5);
+        //r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*1.5);
     }
 
     // get image features
     std::vector<cv::KeyPoint> locs1, locs2;
     std::vector<float> pts1;
     std::vector<cv::DMatch> matches;
-    FAST(l,locs1,100,true);
+    FAST(l,locs1,50,true);
 
     // get float arrays
     for(const auto & l : locs1){
         pts1.push_back(l.pt.x);
         pts1.push_back(l.pt.y);
     }
-    
+    if(true){
+        pts1.clear();
+        const char* tmp = std::string("points.dat").c_str();
+        pts1 = readBinaryFile(tmp);
+        locs1.clear();
+        for(auto i=0; i < pts1.size(); i+=2){
+            locs1.push_back(cv::KeyPoint(pts1[i],pts1[i+1],4));
+        }
+    }
     // perform basic matching
     auto begin = std::chrono::high_resolution_clock::now();
     auto pts2 = match(l.data,r.data,l.cols,l.rows,pts1);
@@ -49,8 +68,8 @@ int main(int argc,char* argv[])
         if(pts2[2*i] >= 0)
             matches.push_back({i,i,0});
     }
-    drawMatches(l,locs1,r,locs2,matches,outimg);
     printf("%lu %lu\n",locs1.size(),matches.size());
+    drawMatches(l,locs1,r,locs2,matches,outimg);
 
     cv::imshow("window",outimg);
     cv::waitKey(0);
