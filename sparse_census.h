@@ -19,9 +19,13 @@
 // Numer of pixels
 #define NUM_SAMPLES (24)
 // matching box size
+#ifndef BOX_RADIUS
 #define BOX_RADIUS (4)
+#endif
 // matching search range
-#define MAX_DISP (128) 
+#ifndef MAX_DISP
+#define MAX_DISP (128)
+#endif
 // y,x
 const int samples[NUM_SAMPLES*2] = {
     -3, -2,
