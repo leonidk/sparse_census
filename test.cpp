@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
     std::vector<cv::KeyPoint> locs1, locs2;
     std::vector<float> pts1;
     std::vector<cv::DMatch> matches;
-    FAST(l,locs1,100,true);
+    FAST(l,locs1,60,true);
 
     // get float arrays
     for(const auto & l : locs1){
@@ -50,7 +50,7 @@ int main(int argc,char* argv[])
             matches.push_back({i,i,0});
     }
     drawMatches(l,locs1,r,locs2,matches,outimg);
-    printf("%d %d\n",locs1.size(),matches.size());
+    printf("%lu %lu\n",locs1.size(),matches.size());
 
     cv::imshow("window",outimg);
     cv::waitKey(0);

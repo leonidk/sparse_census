@@ -19,9 +19,9 @@
 // Numer of pixels
 #define NUM_SAMPLES (24)
 // matching box size
-#define BOX_RADIUS (5)
+#define BOX_RADIUS (4)
 // matching search range
-#define MAX_DISP (96) 
+#define MAX_DISP (128) 
 // y,x
 const int samples[NUM_SAMPLES*2] = {
     -3, -2,
@@ -50,29 +50,13 @@ const int samples[NUM_SAMPLES*2] = {
     3, 2
 };
 
-static void censusTransformOG(uint8_t* in, uint32_t* out, int w, int h)
-{
-    int ns = NUM_SAMPLES;//(int)(sizeof(samples) / sizeof(int)) / 2;
-    for (int y = C_R; y < h - C_R; y++) {
-        for (int x = C_R; x < w - C_R; x++) {
-            uint32_t px = 0;
-            auto center = in[y * w + x];
-            for (int p = 0; p < ns; p++) {
-                auto yp = (y + samples[2 * p]);
-                auto xp = (x + samples[2 * p + 1]);
-                px |= (in[yp * w + xp] > center) << p;
-            }
-            out[y * w + x] = px;
-        }
-    }
-}
 static void censusTransform(uint8_t* in, uint32_t* out, int width, int height,
                          int u,int v,int w,int e, int n, int s)
 {
     for (int y = std::max(v-n,C_R); y <= std::min(v+s,height - C_R-1); y++) {
         for (int x = std::max(u-w,C_R); x <= std::min(u+e,width - C_R-1); x++) {
             // my benchmark suggests this sparse skip is helpful
-            //if( out[y * width + x] != 0) continue;
+            if( out[y * width + x] != 0) continue;
             uint32_t px = 0;
             auto center = in[y * width + x];
             for (int p = 0; p < NUM_SAMPLES; p++) {
@@ -100,12 +84,10 @@ static float subpixel(float costLeft, float costMiddle, float costRight)
 std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t height, std::vector<float> & pts1)
 {
     std::vector<float>    pts2(pts1.size(),-1);
-    std::vector<int>    pts1_int(pts1.size(),-1);
+    std::vector<int>      pts1_int(pts1.size(),-1);
 
     std::vector<uint32_t>  censusLeft(width * height, 0);
     std::vector<uint32_t>  censusRight(width * height, 0);
-    //censusTransformOG(left,censusLeft.data(),width,height);
-    //censusTransformOG(right,censusRight.data(),width,height);
 
     // fill out census windows, sparsely
     for(int i=0; i < pts1.size(); i+=2){
@@ -145,7 +127,6 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
                     cost += popcount(pl ^ pr);
                 }
             }
-            //printf("%d %d %d\n",i,d,cost);
             costs[d] = cost;
         }
   
@@ -162,7 +143,6 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
         auto nC = costs[minLIdx];
         auto nR = costs[std::min(minLIdx + 1, MAX_DISP - 1)];
         auto spL =  subpixel(nL, nC, nR);
-        //printf("%d\t%d\t%f\n",i,minLIdx,spL);
         pts2[i+1] = pts1[i+1];
         pts2[i]   = pts1[i] - minLIdx-DS+spL;
         if(minLIdx==0){
