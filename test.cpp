@@ -20,7 +20,7 @@ int main(int argc,char* argv[])
 
     // blow out the right image
     for(int i=0; i < l.cols*l.rows;i++) {
-        //r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*3/2);
+        r.at<uint8_t>(i) = cv::saturate_cast<uint8_t>(r.at<uint8_t>(i)*3/2);
     }
 
     // get image features
