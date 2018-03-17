@@ -40,6 +40,13 @@
 #ifndef SECOND_PEAK
 #define SECOND_PEAK (50)
 #endif
+// the median has to be at least this much more than best
+// set to zero to disable
+// can also do a different quartile if desired
+#ifndef MEDIAN_THRESH
+#define MEDIAN_THRESH (300)
+#define MEDIAN_ELEM (MAX_DISP/2)
+#endif
 
 // y,x
 const int samples[NUM_SAMPLES*2] = {
@@ -181,6 +188,14 @@ std::vector<float> match(uint8_t * left, uint8_t * right, int32_t width, int32_t
             if(diffSP <= SECOND_PEAK) {
                 valid = false;
 
+            }
+        #endif
+        #if MEDIAN_THRESH != 0
+            // could use robbins-monro for speed but this should be ok
+            std::nth_element(costs.begin(), costs.begin() + MEDIAN_ELEM, costs.end());
+            auto diffM =  costs[MEDIAN_ELEM] - minLVal;
+            if(diffM <= MEDIAN_THRESH) {
+                valid = false;
             }
         #endif
         if(nC < MIN_COST) {
